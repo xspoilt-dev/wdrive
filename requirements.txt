@@ -1,0 +1,10 @@
+Flask
+Werkzeug
+dnslib
+qrcode[pil]
+Pillow
+watchdog
+Jinja2
+markupsafe
+pyinstaller
+colorama
