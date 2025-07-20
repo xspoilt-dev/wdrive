@@ -64,7 +64,6 @@ python run.py --host 0.0.0.0 --port 8080 --password mypassword
 - `--host HOST`: Host address (default: 0.0.0.0)
 - `--port PORT`: Port number (default: 8080) 
 - `--password PWD`: Custom password
-- `--no-dns`: Disable DNS server
 - `--debug`: Enable debug mode
 - `--config FILE`: Use config file
 
@@ -133,14 +132,6 @@ enable_file_preview = true
 - `WDRIVE_PASSWORD`: Set default password
 - `WDRIVE_PORT`: Set default port
 - `WDRIVE_HOST`: Set default host
-
-## 🔧 Advanced Features
-
-### DNS Server
-The built-in DNS server resolves `wdrive` to your local IP:
-- Requires administrator/root privileges
-- Falls back to IP access if DNS fails
-- Can be disabled with `--no-dns` flag
 
 ### File Upload Features
 - **Drag & Drop**: Drop files directly onto the webpage
