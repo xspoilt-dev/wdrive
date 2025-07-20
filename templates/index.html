@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Files - wdrive{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="bi bi-folder-fill text-primary me-2"></i>
+            My Files
+        </h1>
+        <p class="lead text-muted">Manage your shared files across devices</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('upload_file') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-cloud-arrow-up-fill me-2"></i>
+            Upload Files
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form method="GET" class="d-flex">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" 
+                       class="form-control" 
+                       name="search" 
+                       placeholder="Search files..." 
+                       value="{{ search_query }}"
+                       autocomplete="off">
+                <button class="btn btn-outline-primary" type="submit">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-filter me-1"></i>Filter by Type
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="filterFiles('all')">All Files</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterFiles('image')">Images</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterFiles('video')">Videos</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterFiles('audio')">Audio</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterFiles('document')">Documents</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- File Statistics -->
+{% if files %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body py-3">
+                <div class="row text-center">
+                    <div class="col-6 col-md-3">
+                        <h4>{{ files|length }}</h4>
+                        <small>Total Files</small>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <h4>{{ (files|sum(attribute='size_bytes')/1024/1024)|round(1) }} MB</h4>
+                        <small>Total Size</small>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <h4>{{ files|selectattr('is_image')|list|length }}</h4>
+                        <small>Images</small>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <h4>{{ files|selectattr('is_document')|list|length }}</h4>
+                        <small>Documents</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Files List -->
+{% if files %}
+<div class="row" id="filesList">
+    {% for file in files %}
+    <div class="col-12 col-md-6 col-lg-4 mb-3 file-item" 
+         data-type="{{ 'image' if file.is_image else ('video' if file.is_video else ('audio' if file.is_audio else ('document' if file.is_document else 'other'))) }}">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <!-- File Icon and Preview -->
+                <div class="text-center mb-3">
+                    {% if file.is_image %}
+                        <img src="{{ url_for('preview_file', filename=file.name) }}" 
+                             class="img-thumbnail file-preview" 
+                             alt="{{ file.name }}"
+                             style="max-width: 120px; max-height: 120px; object-fit: cover;">
+                    {% else %}
+                        <i class="bi {{ 'bi-file-earmark-image' if file.is_image else 
+                                       ('bi-file-earmark-play' if file.is_video else 
+                                       ('bi-file-earmark-music' if file.is_audio else 
+                                       ('bi-file-earmark-pdf' if file.extension == '.pdf' else 
+                                       ('bi-file-earmark-word' if file.extension in ['.doc', '.docx'] else 
+                                       ('bi-file-earmark-excel' if file.extension in ['.xls', '.xlsx'] else 
+                                       ('bi-file-earmark-ppt' if file.extension in ['.ppt', '.pptx'] else 
+                                       ('bi-file-earmark-zip' if file.extension in ['.zip', '.rar', '.7z'] else 
+                                       'bi-file-earmark'))))))) }} text-primary" 
+                           style="font-size: 3rem;"></i>
+                    {% endif %}
+                </div>
+                
+                <!-- File Info -->
+                <h6 class="card-title text-truncate" title="{{ file.name }}">{{ file.name }}</h6>
+                <div class="small text-muted mb-2">
+                    <div><i class="bi bi-tag me-1"></i>{{ file.type }}</div>
+                    <div><i class="bi bi-hdd me-1"></i>{{ file.size }}</div>
+                    <div><i class="bi bi-calendar me-1"></i>{{ file.modified }}</div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="card-footer bg-transparent">
+                <div class="btn-group w-100" role="group">
+                    <a href="{{ url_for('download_file', filename=file.name) }}" 
+                       class="btn btn-primary btn-sm">
+                        <i class="bi bi-download"></i>
+                    </a>
+                    {% if file.is_image or file.is_video or file.is_audio or file.extension == '.pdf' %}
+                    <button class="btn btn-info btn-sm" onclick="previewFile('{{ file.name }}', '{{ file.type }}')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-warning btn-sm" onclick="renameFile('{{ file.name }}')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteFile('{{ file.name }}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-folder-x text-muted" style="font-size: 4rem;"></i>
+    <h3 class="mt-3 text-muted">No files found</h3>
+    <p class="text-muted mb-4">
+        {% if search_query %}
+            No files match "{{ search_query }}". Try a different search term.
+        {% else %}
+            Upload some files to get started with your local drive.
+        {% endif %}
+    </p>
+    <a href="{{ url_for('upload_file') }}" class="btn btn-primary btn-lg">
+        <i class="bi bi-cloud-arrow-up-fill me-2"></i>
+        Upload Your First File
+    </a>
+</div>
+{% endif %}
+
+<!-- File Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalTitle">File Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center" id="previewModalBody">
+                <!-- Preview content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="previewDownloadBtn" href="#" class="btn btn-primary">
+                    <i class="bi bi-download me-1"></i>Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Modal -->
+<div class="modal fade" id="renameModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rename File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="renameForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newFileName" class="form-label">New file name</label>
+                        <input type="text" class="form-control" id="newFileName" name="new_name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Rename</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteFileName"></strong>?</p>
+                <p class="text-danger small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterFiles(type) {
+    const items = document.querySelectorAll('.file-item');
+    items.forEach(item => {
+        if (type === 'all' || item.dataset.type === type) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function previewFile(filename, type) {
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    const modalTitle = document.getElementById('previewModalTitle');
+    const modalBody = document.getElementById('previewModalBody');
+    const downloadBtn = document.getElementById('previewDownloadBtn');
+    
+    modalTitle.textContent = filename;
+    downloadBtn.href = `/download/${encodeURIComponent(filename)}`;
+    
+    const previewUrl = `/preview/${encodeURIComponent(filename)}`;
+    
+    if (type === 'Image') {
+        modalBody.innerHTML = `<img src="${previewUrl}" class="img-fluid" alt="${filename}">`;
+    } else if (type === 'Video') {
+        modalBody.innerHTML = `<video controls class="w-100" style="max-height: 400px;">
+                                <source src="${previewUrl}" type="video/mp4">
+                                Your browser does not support video playback.
+                              </video>`;
+    } else if (type === 'Audio') {
+        modalBody.innerHTML = `<audio controls class="w-100">
+                                <source src="${previewUrl}">
+                                Your browser does not support audio playback.
+                              </audio>`;
+    } else if (type === 'PDF') {
+        modalBody.innerHTML = `<iframe src="${previewUrl}" class="w-100" style="height: 400px;" frameborder="0"></iframe>`;
+    } else {
+        modalBody.innerHTML = `<p class="text-muted">Preview not available for this file type.</p>`;
+    }
+    
+    modal.show();
+}
+
+function renameFile(filename) {
+    const modal = new bootstrap.Modal(document.getElementById('renameModal'));
+    const form = document.getElementById('renameForm');
+    const input = document.getElementById('newFileName');
+    
+    form.action = `/rename/${encodeURIComponent(filename)}`;
+    input.value = filename;
+    input.select();
+    
+    modal.show();
+}
+
+function deleteFile(filename) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const form = document.getElementById('deleteForm');
+    const fileNameSpan = document.getElementById('deleteFileName');
+    
+    form.action = `/delete/${encodeURIComponent(filename)}`;
+    fileNameSpan.textContent = filename;
+    
+    modal.show();
+}
+</script>
+{% endblock %}

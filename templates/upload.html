@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Upload - wdrive{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-6">
+                <i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>
+                Upload Files
+            </h1>
+            <p class="lead text-muted">Drag and drop files or click to browse</p>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <!-- Upload Form -->
+                <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <!-- File Input -->
+                    <div class="mb-4">
+                        <label for="fileInput" class="form-label h5">
+                            <i class="bi bi-cloud-arrow-up-fill me-2"></i>Select Files
+                        </label>
+                        <input type="file" id="fileInput" name="files" multiple class="form-control form-control-lg" accept="*/*">
+                        <div class="form-text">Select one or more files to upload. Max size: 16GB per file.</div>
+                    </div>
+
+                    <!-- Drag and Drop Zone -->
+                    <div id="dropZone" class="border-dashed border-2 border-primary rounded p-4 text-center mb-4" 
+                         style="min-height: 150px;">
+                        <i class="bi bi-cloud-arrow-up text-primary mb-2" style="font-size: 2.5rem;"></i>
+                        <h5>Or drag and drop files here</h5>
+                        <p class="text-muted">Files will be added to the selection above</p>
+                    </div>
+
+                    <!-- Upload Button -->
+                    <div class="text-center">
+                        <button type="submit" id="uploadBtn" class="btn btn-success btn-lg">
+                            <i class="bi bi-cloud-arrow-up-fill me-2"></i>
+                            Upload Files
+                        </button>
+                        <button type="button" id="clearBtn" class="btn btn-outline-secondary btn-lg ms-2" onclick="clearFiles()">
+                            <i class="bi bi-x-circle me-2"></i>
+                            Clear Selection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Upload Tips -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle text-info me-2"></i>Upload Tips</h5>
+                <ul class="mb-0">
+                    <li>Maximum file size: <strong>16 GB</strong></li>
+                    <li>Supported formats: Images, Videos, Documents, Archives, Audio, and more</li>
+                    <li>Multiple files can be uploaded at once</li>
+                    <li>Files with same names will be automatically renamed</li>
+                    <li>Upload progress will be shown in real-time</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Files
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Simple drag and drop handler
+const fileInput = document.getElementById('fileInput');
+const dropZone = document.getElementById('dropZone');
+const uploadForm = document.getElementById('uploadForm');
+
+// Drag and drop events
+dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropZone.classList.add('border-success', 'bg-light');
+});
+
+dropZone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('border-success', 'bg-light');
+});
+
+dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('border-success', 'bg-light');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        // Add files to the file input
+        const dt = new DataTransfer();
+        
+        // Add existing files from input
+        if (fileInput.files.length > 0) {
+            for (let i = 0; i < fileInput.files.length; i++) {
+                dt.items.add(fileInput.files[i]);
+            }
+        }
+        
+        // Add dropped files
+        for (let i = 0; i < files.length; i++) {
+            dt.items.add(files[i]);
+        }
+        
+        fileInput.files = dt.files;
+        updateFileCount();
+    }
+});
+
+// Update file count display
+function updateFileCount() {
+    const count = fileInput.files.length;
+    if (count > 0) {
+        dropZone.innerHTML = `
+            <i class="bi bi-files text-success mb-2" style="font-size: 2.5rem;"></i>
+            <h5 class="text-success">${count} file(s) selected</h5>
+            <p class="text-muted">Ready to upload</p>
+        `;
+    } else {
+        dropZone.innerHTML = `
+            <i class="bi bi-cloud-arrow-up text-primary mb-2" style="font-size: 2.5rem;"></i>
+            <h5>Or drag and drop files here</h5>
+            <p class="text-muted">Files will be added to the selection above</p>
+        `;
+    }
+}
+
+// File input change handler
+fileInput.addEventListener('change', updateFileCount);
+
+// Clear files function
+function clearFiles() {
+    fileInput.value = '';
+    updateFileCount();
+}
+
+// Form submission handler with progress
+uploadForm.addEventListener('submit', function(e) {
+    if (fileInput.files.length === 0) {
+        e.preventDefault();
+        alert('Please select files to upload first!');
+        return;
+    }
+    
+    // Show progress (simple loading state)
+    const uploadBtn = document.getElementById('uploadBtn');
+    const originalText = uploadBtn.innerHTML;
+    uploadBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i>Uploading...';
+    uploadBtn.disabled = true;
+    
+    // Note: For a real progress bar, you'd need to use XMLHttpRequest
+    // This is a simplified version that shows loading state
+});
+
+// Initialize
+updateFileCount();
+</script>
+
+<style>
+.border-dashed {
+    border-style: dashed !important;
+    transition: all 0.3s ease;
+}
+
+.form-control-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+</style>
+{% endblock %}

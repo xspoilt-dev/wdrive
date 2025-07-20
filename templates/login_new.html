@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Login - wdrive{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0" style="border-radius: 20px; backdrop-filter: blur(10px); background: rgba(255,255,255,0.95);">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="mb-4">
+                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center shadow" style="width: 80px; height: 80px;">
+                            <i class="bi bi-shield-lock-fill text-white" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold mb-2 text-dark">Welcome to wdrive</h2>
+                    <p class="text-muted">Enter your password to access your local drive</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text border-end-0 bg-transparent">
+                                <i class="bi bi-key text-primary"></i>
+                            </span>
+                            <input type="password" 
+                                   class="form-control border-start-0 ps-0" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Enter password" 
+                                   required
+                                   autocomplete="current-password"
+                                   style="border-radius: 0 10px 10px 0;">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 shadow" style="border-radius: 10px;">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Access Drive
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <div class="alert alert-info border-0 bg-light" style="border-radius: 10px;">
+                        <small>
+                            <i class="bi bi-info-circle me-1"></i>
+                            Default password: <code class="text-primary fw-bold">wdrive123</code>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Cards -->
+        <div class="row mt-4 g-3">
+            <div class="col-4">
+                <div class="card text-center border-0 h-100 shadow-sm" style="border-radius: 15px; background: rgba(255,255,255,0.8);">
+                    <div class="card-body py-3">
+                        <i class="bi bi-wifi text-success mb-2" style="font-size: 1.5rem;"></i>
+                        <small class="d-block text-dark fw-semibold">Local Network</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card text-center border-0 h-100 shadow-sm" style="border-radius: 15px; background: rgba(255,255,255,0.8);">
+                    <div class="card-body py-3">
+                        <i class="bi bi-shield-check text-primary mb-2" style="font-size: 1.5rem;"></i>
+                        <small class="d-block text-dark fw-semibold">Secure</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card text-center border-0 h-100 shadow-sm" style="border-radius: 15px; background: rgba(255,255,255,0.8);">
+                    <div class="card-body py-3">
+                        <i class="bi bi-cloud-arrow-up text-info mb-2" style="font-size: 1.5rem;"></i>
+                        <small class="d-block text-dark fw-semibold">Easy Sharing</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.input-group-text {
+    border-color: #ced4da;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-color: #86b7fe;
+}
+
+.form-control:focus + .input-group-text,
+.input-group-text:has(+ .form-control:focus) {
+    border-color: #86b7fe;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4c93 100%);
+}
+
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}
