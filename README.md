@@ -179,7 +179,7 @@ The executable will be in the `dist/` directory.
 ### Common Issues
 
 **Permission Denied (Port 53/80):**
-- Run as administrator/root for DNS server
+- Run as administrator/root
 - Use alternative ports (8080, 3000, etc.)
 
 **Cannot Access from Mobile:**
@@ -192,10 +192,6 @@ The executable will be in the `dist/` directory.
 - Verify file type is allowed
 - Ensure sufficient disk space
 
-**DNS Not Working:**
-- Run with `--no-dns` flag
-- Use IP address directly
-- Check administrator privileges
 
 ### Performance Tips
 
@@ -223,13 +219,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Flask**: Web framework
 - **Bootstrap**: UI framework
 - **Bootstrap Icons**: Icon library
-- **dnslib**: DNS server functionality
 - **qrcode**: QR code generation
 
 ## 📧 Contact
 
-**Author**: xspoilt-dev
-**Telegram**: https://t.me/x_spoilt
+**Telegram**: x_spoilt
 
 ---
 
