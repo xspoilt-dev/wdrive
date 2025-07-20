@@ -42,7 +42,7 @@
    ```
 
 4. **Access the server:**
-   - Open `http://wdrive/` in your browser
+   - Open `http://127.0.0.1:8080` in your browser
    - Or use the generated QR code on mobile
    - Default password: `wdrive123`
 
@@ -69,7 +69,7 @@ python run.py --host 0.0.0.0 --port 8080 --password mypassword
 
 ### Accessing from Devices
 
-1. **Desktop/Laptop:** Open `http://wdrive/` or `http://[YOUR-IP]:8080/`
+1. **Desktop/Laptop:** `http://[YOUR-IP]:8080/`
 2. **Mobile:** Scan the QR code displayed when server starts
 3. **Same Network:** All devices must be on the same Wi-Fi network
 
@@ -85,7 +85,6 @@ python run.py --host 0.0.0.0 --port 8080 --password mypassword
 ```
 wdrive/
 ├── app.py                 # Main Flask application
-├── dns_server.py         # DNS server for 'wdrive' domain
 ├── run.py               # Server startup script
 ├── requirements.txt     # Python dependencies
 ├── config.ini          # Configuration file
@@ -230,7 +229,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Contact
 
 **Author**: xspoilt-dev
-**GitHub**: [https://github.com/xspoilt-dev](https://github.com/xspoilt-dev)
+**Telegram**: https://t.me/x_spoilt
 
 ---
 
